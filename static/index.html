@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes Web Terminal</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Kubernetes Web Terminal</h1>
+        
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'terminal-tab')">Terminal</button>
+            <button class="tab-button" onclick="openTab(event, 'tool-builder-tab')">Tool Builder</button>
+        </div>
+
+        <div id="terminal-tab" class="tab-content active">
+            <div class="pod-selector">
+                <label for="pod-select">Select Pod:</label>
+                <select id="pod-select">
+                    <option value="">Loading pods...</option>
+                </select>
+                <button id="connect-btn" onclick="connectToTerminal()">Connect</button>
+            </div>
+            
+            <div id="terminal-container">
+                <div id="terminal"></div>
+            </div>
+        </div>
+
+        <div id="tool-builder-tab" class="tab-content">
+            <div class="tool-builder">
+                <h2>Tool Builder</h2>
+                <p>Create and edit custom scripts for Kubernetes operations</p>
+                
+                <div class="script-editor">
+                    <div class="script-header">
+                        <input type="text" id="script-name" placeholder="Script Name" value="my-script">
+                        <select id="script-type">
+                            <option value="bash">Bash</option>
+                            <option value="python">Python</option>
+                            <option value="kubectl">kubectl</option>
+                        </select>
+                        <button id="save-script-btn" onclick="saveScript()">Save Script</button>
+                        <button id="run-script-btn" onclick="runScript()">Run Script</button>
+                    </div>
+                    
+                    <div class="editor-container">
+                        <textarea id="script-editor" placeholder="Enter your script here...
+# Example bash script:
+kubectl get pods -n default
+echo 'Script completed'"></textarea>
+                    </div>
+                </div>
+
+                <div class="saved-scripts">
+                    <h3>Saved Scripts</h3>
+                    <div id="scripts-list">
+                        <!-- Saved scripts will be loaded here -->
+                    </div>
+                </div>
+
+                <div id="script-output">
+                    <h3>Output</h3>
+                    <pre id="output-content"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

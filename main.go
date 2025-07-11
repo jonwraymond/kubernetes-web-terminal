@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -27,6 +30,17 @@ type TerminalSession struct {
 	sizeChan chan remotecommand.TerminalSize
 }
 
+type Pod struct {
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+	Status    string `json:"status"`
+}
+
+type ScriptRequest struct {
+	Script string `json:"script"`
+	Type   string `json:"type"`
+}
+
 func main() {
 	router := mux.NewRouter()
 
@@ -36,6 +50,7 @@ func main() {
 	// API endpoints
 	router.HandleFunc("/api/pods", getPodsHandler).Methods("GET")
 	router.HandleFunc("/api/terminal", terminalHandler).Methods("GET")
+	router.HandleFunc("/api/execute-script", executeScriptHandler).Methods("POST")
 
 	// Serve index.html for root path
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -67,9 +82,40 @@ func getKubeClient() (*kubernetes.Clientset, error) {
 }
 
 func getPodsHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement pod listing
+	client, err := getKubeClient()
+	if err != nil {
+		log.Printf("Failed to get Kubernetes client: %v", err)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"pods": [], "error": "Failed to connect to Kubernetes cluster"}`))
+		return
+	}
+
+	namespace := r.URL.Query().Get("namespace")
+	if namespace == "" {
+		namespace = "default"
+	}
+
+	pods, err := client.CoreV1().Pods(namespace).List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		log.Printf("Failed to list pods: %v", err)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"pods": [], "error": "Failed to list pods"}`))
+		return
+	}
+
+	var podList []Pod
+	for _, pod := range pods.Items {
+		podList = append(podList, Pod{
+			Name:      pod.Name,
+			Namespace: pod.Namespace,
+			Status:    string(pod.Status.Phase),
+		})
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"pods": []}`))
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"pods": podList,
+	})
 }
 
 func terminalHandler(w http.ResponseWriter, r *http.Request) {
@@ -98,6 +144,30 @@ func (t *TerminalSession) Read(p []byte) (int, error) {
 	}
 	copy(p, message)
 	return len(message), nil
+}
+
+func executeScriptHandler(w http.ResponseWriter, r *http.Request) {
+	var req ScriptRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// For demonstration purposes, we'll simulate script execution
+	// In a real implementation, you would execute the script in a secure environment
+
+	w.Header().Set("Content-Type", "text/plain")
+
+	switch req.Type {
+	case "bash":
+		fmt.Fprintf(w, "Executing bash script:\n%s\n\n--- Simulated Output ---\nScript executed successfully!\nNote: In production, this would run in a controlled Kubernetes environment.", req.Script)
+	case "python":
+		fmt.Fprintf(w, "Executing python script:\n%s\n\n--- Simulated Output ---\nPython script executed successfully!\nNote: In production, this would run in a controlled Kubernetes environment.", req.Script)
+	case "kubectl":
+		fmt.Fprintf(w, "Executing kubectl commands:\n%s\n\n--- Simulated Output ---\nkubectl commands executed successfully!\nNote: In production, this would run actual kubectl commands against the cluster.", req.Script)
+	default:
+		fmt.Fprintf(w, "Executing %s script:\n%s\n\n--- Simulated Output ---\nScript executed successfully!", req.Type, req.Script)
+	}
 }
 
 // Write implements io.Writer
