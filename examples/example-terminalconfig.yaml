@@ -1,0 +1,41 @@
+apiVersion: terminal.kubernetes-web-terminal.io/v1
+kind: TerminalConfig
+metadata:
+  name: example-terminal
+  namespace: default
+spec:
+  image: ubuntu:22.04
+  command:
+  - /bin/bash
+  args:
+  - -c
+  - "echo 'Welcome to the terminal with file mounts!' && /bin/bash"
+  fileMounts:
+  - name: config-files
+    mountPath: /etc/config
+    configMapRef:
+      name: app-config
+    readOnly: true
+  - name: secret-files
+    mountPath: /etc/secrets
+    secretRef:
+      secretName: app-secrets
+    readOnly: true
+  - name: data-volume
+    mountPath: /data
+    volumeRef:
+      name: shared-data
+      subPath: app-data
+    readOnly: false
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    readOnlyRootFilesystem: false

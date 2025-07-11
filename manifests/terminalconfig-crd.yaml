@@ -1,0 +1,202 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: terminalconfigs.terminal.kubernetes-web-terminal.io
+spec:
+  group: terminal.kubernetes-web-terminal.io
+  versions:
+  - name: v1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              image:
+                type: string
+                description: Container image to use for the terminal
+              command:
+                type: array
+                items:
+                  type: string
+                description: Command to run in the terminal
+              args:
+                type: array
+                items:
+                  type: string
+                description: Arguments to pass to the command
+              fileMounts:
+                type: array
+                description: File mounts to be made available in the terminal
+                items:
+                  type: object
+                  required:
+                  - name
+                  - mountPath
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the file mount
+                    mountPath:
+                      type: string
+                      description: Where to mount the files in the terminal container
+                    configMapRef:
+                      type: object
+                      description: Reference to a ConfigMap to mount
+                      properties:
+                        name:
+                          type: string
+                        optional:
+                          type: boolean
+                        defaultMode:
+                          type: integer
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              key:
+                                type: string
+                              path:
+                                type: string
+                              mode:
+                                type: integer
+                    secretRef:
+                      type: object
+                      description: Reference to a Secret to mount
+                      properties:
+                        secretName:
+                          type: string
+                        optional:
+                          type: boolean
+                        defaultMode:
+                          type: integer
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              key:
+                                type: string
+                              path:
+                                type: string
+                              mode:
+                                type: integer
+                    volumeRef:
+                      type: object
+                      description: Reference to an existing volume to mount
+                      required:
+                      - name
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the volume
+                        subPath:
+                          type: string
+                          description: Sub-path within the volume
+                    readOnly:
+                      type: boolean
+                      description: Whether the mount should be read-only
+              resources:
+                type: object
+                description: Resource requirements for the terminal container
+                properties:
+                  requests:
+                    type: object
+                    additionalProperties:
+                      type: string
+                  limits:
+                    type: object
+                    additionalProperties:
+                      type: string
+              securityContext:
+                type: object
+                description: Security context for the terminal container
+                properties:
+                  runAsUser:
+                    type: integer
+                  runAsGroup:
+                    type: integer
+                  runAsNonRoot:
+                    type: boolean
+                  readOnlyRootFilesystem:
+                    type: boolean
+                  capabilities:
+                    type: object
+                    properties:
+                      add:
+                        type: array
+                        items:
+                          type: string
+                      drop:
+                        type: array
+                        items:
+                          type: string
+          status:
+            type: object
+            properties:
+              phase:
+                type: string
+                enum:
+                - Pending
+                - Running
+                - Failed
+                - Terminated
+                description: Current phase of the terminal configuration
+              message:
+                type: string
+                description: Additional information about the current phase
+              conditions:
+                type: array
+                description: Latest available observations of the terminal config's current state
+                items:
+                  type: object
+                  required:
+                  - type
+                  - status
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                      - Ready
+                      - FilesMounted
+                    status:
+                      type: string
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                    lastTransitionTime:
+                      type: string
+                      format: date-time
+                    reason:
+                      type: string
+                    message:
+                      type: string
+              createdAt:
+                type: string
+                format: date-time
+                description: When the terminal session was created
+    additionalPrinterColumns:
+    - name: Phase
+      type: string
+      description: Current phase of the terminal configuration
+      jsonPath: .status.phase
+    - name: Image
+      type: string
+      description: Container image used for the terminal
+      jsonPath: .spec.image
+    - name: Age
+      type: date
+      jsonPath: .metadata.creationTimestamp
+  scope: Namespaced
+  names:
+    plural: terminalconfigs
+    singular: terminalconfig
+    kind: TerminalConfig
+    shortNames:
+    - tc
+    - terminal
