@@ -33,12 +33,19 @@ type TerminalSession struct {
 	sizeChan chan remotecommand.TerminalSize
 }
 
-// File upload related types
+// Pod and script related types
 type Pod struct {
 	Name      string `json:"name"`
 	Namespace string `json:"namespace"`
+	Status    string `json:"status"`
 }
 
+type ScriptRequest struct {
+	Script string `json:"script"`
+	Type   string `json:"type"`
+}
+
+// File upload related types
 type UploadResponse struct {
 	FileID string `json:"fileId"`
 	Path   string `json:"path"`
@@ -106,6 +113,7 @@ func main() {
 	router.HandleFunc("/api/terminalconfigs/{name}", server.getTerminalConfigHandler).Methods("GET")
 	router.HandleFunc("/api/terminalconfigs", server.createTerminalConfigHandler).Methods("POST")
 	router.HandleFunc("/api/terminal", server.terminalHandler).Methods("GET")
+	router.HandleFunc("/api/execute-script", executeScriptHandler).Methods("POST")
 
 	// Serve index.html for root path
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -145,30 +153,33 @@ func getKubeClient() (*kubernetes.Clientset, error) {
 
 func (s *Server) getPodsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
-	pods, err := s.kubeClient.CoreV1().Pods(s.namespace).List(ctx, metav1.ListOptions{})
+	
+	// Allow namespace to be specified via query parameter, default to server namespace
+	namespace := r.URL.Query().Get("namespace")
+	if namespace == "" {
+		namespace = s.namespace
+	}
+	
+	pods, err := s.kubeClient.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		// If no Kubernetes client available or listing fails, return mock pods for testing
 		log.Printf("Failed to list pods, returning mock pods: %v", err)
 		mockPods := []Pod{
-			{Name: "nginx-deployment-123", Namespace: "default"},
-			{Name: "redis-server-456", Namespace: "default"},
-			{Name: "web-app-789", Namespace: "production"},
+			{Name: "nginx-deployment-123", Namespace: "default", Status: "Running"},
+			{Name: "redis-server-456", Namespace: "default", Status: "Running"},
+			{Name: "web-app-789", Namespace: "production", Status: "Running"},
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string][]Pod{"pods": mockPods})
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"pods": mockPods,
+		})
 		return
 	}
 
-	type podInfo struct {
-		Name      string `json:"name"`
-		Namespace string `json:"namespace"`
-		Status    string `json:"status"`
-	}
-
-	var podList []podInfo
+	var podList []Pod
 	for _, pod := range pods.Items {
-		podList = append(podList, podInfo{
+		podList = append(podList, Pod{
 			Name:      pod.Name,
 			Namespace: pod.Namespace,
 			Status:    string(pod.Status.Phase),
@@ -176,7 +187,9 @@ func (s *Server) getPodsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{"pods": podList})
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"pods": podList,
+	})
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -395,6 +408,30 @@ func (t *TerminalSession) Read(p []byte) (int, error) {
 	}
 	copy(p, message)
 	return len(message), nil
+}
+
+func executeScriptHandler(w http.ResponseWriter, r *http.Request) {
+	var req ScriptRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// For demonstration purposes, we'll simulate script execution
+	// In a real implementation, you would execute the script in a secure environment
+
+	w.Header().Set("Content-Type", "text/plain")
+
+	switch req.Type {
+	case "bash":
+		fmt.Fprintf(w, "Executing bash script:\n%s\n\n--- Simulated Output ---\nScript executed successfully!\nNote: In production, this would run in a controlled Kubernetes environment.", req.Script)
+	case "python":
+		fmt.Fprintf(w, "Executing python script:\n%s\n\n--- Simulated Output ---\nPython script executed successfully!\nNote: In production, this would run in a controlled Kubernetes environment.", req.Script)
+	case "kubectl":
+		fmt.Fprintf(w, "Executing kubectl commands:\n%s\n\n--- Simulated Output ---\nkubectl commands executed successfully!\nNote: In production, this would run actual kubectl commands against the cluster.", req.Script)
+	default:
+		fmt.Fprintf(w, "Executing %s script:\n%s\n\n--- Simulated Output ---\nScript executed successfully!", req.Type, req.Script)
+	}
 }
 
 // Write implements io.Writer
