@@ -340,27 +340,3 @@ func (t *TerminalSession) Write(p []byte) (int, error) {
 	}
 	return len(p), nil
 }
-
-func executeScriptHandler(w http.ResponseWriter, r *http.Request) {
-	var req ScriptRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	// For demonstration purposes, we'll simulate script execution
-	// In a real implementation, you would execute the script in a secure environment
-
-	w.Header().Set("Content-Type", "text/plain")
-
-	switch req.Type {
-	case "bash":
-		fmt.Fprintf(w, "Executing bash script:\n%s\n\n--- Simulated Output ---\nScript executed successfully!\nNote: In production, this would run in a controlled Kubernetes environment.", req.Script)
-	case "python":
-		fmt.Fprintf(w, "Executing python script:\n%s\n\n--- Simulated Output ---\nPython script executed successfully!\nNote: In production, this would run in a controlled Kubernetes environment.", req.Script)
-	case "kubectl":
-		fmt.Fprintf(w, "Executing kubectl commands:\n%s\n\n--- Simulated Output ---\nkubectl commands executed successfully!\nNote: In production, this would run actual kubectl commands against the cluster.", req.Script)
-	default:
-		fmt.Fprintf(w, "Executing %s script:\n%s\n\n--- Simulated Output ---\nScript executed successfully!", req.Type, req.Script)
-	}
-}
