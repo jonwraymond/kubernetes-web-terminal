@@ -17,6 +17,9 @@
 # Go workspace file
 go.work
 
+# Uploaded files directory
+uploads/
+
 # IDE specific files
 .idea/
 .vscode/

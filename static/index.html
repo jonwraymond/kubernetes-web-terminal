@@ -13,6 +13,7 @@
         <div class="tabs">
             <button class="tab-button active" onclick="openTab(event, 'terminal-tab')">Terminal</button>
             <button class="tab-button" onclick="openTab(event, 'tool-builder-tab')">Tool Builder</button>
+            <button class="tab-button" onclick="openTab(event, 'file-mount-tab')">File Mount</button>
         </div>
 
         <div id="terminal-tab" class="tab-content active">
@@ -67,8 +68,62 @@ echo 'Script completed'"></textarea>
                 </div>
             </div>
         </div>
+
+        <div id="file-mount-tab" class="tab-content">
+            <div class="panel-container">
+                <!-- File Mount Panel -->
+                <div class="panel">
+                    <h2>File Mount</h2>
+                    <div class="file-upload-section">
+                        <div id="drop-zone" class="drop-zone">
+                            <div class="drop-zone-content">
+                                <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7,10 12,15 17,10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <p class="drop-text">Drag and drop files here or <button type="button" id="file-select-btn" class="link-button">browse</button></p>
+                                <input type="file" id="file-input" multiple style="display: none;">
+                            </div>
+                        </div>
+                        
+                        <div id="file-list" class="file-list">
+                            <!-- Uploaded files will appear here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pod Selection Panel -->
+                <div class="panel">
+                    <h2>Pod Selection</h2>
+                    <div class="pod-selection">
+                        <div id="pod-list" class="pod-list">
+                            <p class="loading">Loading pods...</p>
+                        </div>
+                        <button id="refresh-pods" class="btn btn-secondary">Refresh Pods</button>
+                    </div>
+                </div>
+
+                <!-- Terminal Panel -->
+                <div class="panel">
+                    <h2>Terminal</h2>
+                    <div class="terminal-section">
+                        <div id="terminal-container" class="terminal-container">
+                            <div class="terminal-placeholder">
+                                <p>Select a pod to start terminal session</p>
+                            </div>
+                        </div>
+                        <div class="terminal-controls">
+                            <button id="connect-terminal" class="btn btn-primary" disabled>Connect Terminal</button>
+                            <button id="disconnect-terminal" class="btn btn-secondary" disabled>Disconnect</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="/static/app.js"></script>
+    <script src="/static/script.js"></script>
 </body>
 </html>

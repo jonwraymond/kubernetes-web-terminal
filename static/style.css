@@ -1,4 +1,4 @@
-/* Global Styles */
+/* CSS Reset and Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -48,35 +48,32 @@ h1 {
 
 .tab-button.active {
     background-color: #00d4aa;
-    color: #000;
+    color: #1e1e1e;
 }
 
+/* Tab Content */
 .tab-content {
     display: none;
-    animation: fadeIn 0.3s;
+    background-color: #2d2d2d;
+    padding: 20px;
+    border-radius: 0 5px 5px 5px;
+    min-height: 400px;
 }
 
 .tab-content.active {
     display: block;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* Terminal Tab */
+/* Terminal Tab Styles */
 .pod-selector {
     margin-bottom: 20px;
-    padding: 15px;
-    background-color: #2d2d2d;
-    border-radius: 5px;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .pod-selector label {
+    color: #ffffff;
     font-weight: bold;
 }
 
@@ -85,18 +82,19 @@ h1 {
     color: #ffffff;
     border: 1px solid #555;
     padding: 8px 12px;
-    border-radius: 3px;
-    flex: 1;
+    border-radius: 4px;
+    min-width: 200px;
 }
 
 .pod-selector button {
     background-color: #00d4aa;
-    color: #000;
+    color: #1e1e1e;
     border: none;
     padding: 8px 16px;
-    border-radius: 3px;
+    border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    transition: background-color 0.3s;
 }
 
 .pod-selector button:hover {
@@ -104,24 +102,26 @@ h1 {
 }
 
 #terminal-container {
-    background-color: #000;
-    border-radius: 5px;
-    padding: 10px;
-    height: 500px;
-    overflow-y: auto;
-    font-family: 'Courier New', monospace;
+    background-color: #000000;
+    border: 1px solid #555;
+    border-radius: 4px;
+    height: 400px;
+    overflow: hidden;
 }
 
 #terminal {
+    width: 100%;
     height: 100%;
     color: #00ff00;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    padding: 10px;
+    overflow-y: auto;
 }
 
-/* Tool Builder Tab */
+/* Tool Builder Tab Styles */
 .tool-builder {
-    background-color: #2d2d2d;
-    border-radius: 5px;
-    padding: 20px;
+    color: #ffffff;
 }
 
 .tool-builder h2 {
@@ -130,12 +130,15 @@ h1 {
 }
 
 .tool-builder p {
+    color: #cccccc;
     margin-bottom: 20px;
-    color: #ccc;
 }
 
 .script-editor {
-    margin-bottom: 30px;
+    background-color: #333;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
 }
 
 .script-header {
@@ -143,62 +146,74 @@ h1 {
     gap: 10px;
     margin-bottom: 15px;
     align-items: center;
-    flex-wrap: wrap;
 }
 
-.script-header input,
-.script-header select,
-.script-header button {
-    padding: 8px 12px;
-    border-radius: 3px;
-    border: 1px solid #555;
-    background-color: #333;
+.script-header input[type="text"] {
+    background-color: #2d2d2d;
     color: #ffffff;
-}
-
-.script-header input {
+    border: 1px solid #555;
+    padding: 8px 12px;
+    border-radius: 4px;
     flex: 1;
-    min-width: 200px;
 }
 
-.script-header button {
+.script-header select {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border: 1px solid #555;
+    padding: 8px 12px;
+    border-radius: 4px;
+    min-width: 120px;
+}
+
+.script-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.script-actions button {
     background-color: #00d4aa;
-    color: #000;
+    color: #1e1e1e;
     border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
     transition: background-color 0.3s;
 }
 
-.script-header button:hover {
+.script-actions button:hover {
     background-color: #00b894;
 }
 
-.editor-container {
-    margin-bottom: 20px;
+.script-actions button.run-btn {
+    background-color: #ff6b6b;
 }
 
-#script-editor {
+.script-actions button.run-btn:hover {
+    background-color: #ff5252;
+}
+
+#script-content {
     width: 100%;
-    height: 300px;
+    min-height: 200px;
     background-color: #1e1e1e;
     color: #ffffff;
     border: 1px solid #555;
-    border-radius: 5px;
-    padding: 15px;
+    border-radius: 4px;
+    padding: 12px;
     font-family: 'Courier New', monospace;
     font-size: 14px;
     resize: vertical;
     line-height: 1.4;
 }
 
-#script-editor:focus {
-    outline: none;
-    border-color: #00d4aa;
+#script-content::placeholder {
+    color: #888;
 }
 
 .saved-scripts {
-    margin-bottom: 30px;
+    margin-top: 30px;
 }
 
 .saved-scripts h3 {
@@ -206,84 +221,75 @@ h1 {
     margin-bottom: 15px;
 }
 
-#scripts-list {
+.scripts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
 }
 
-.script-item {
+.script-card {
     background-color: #333;
-    padding: 15px;
-    border-radius: 5px;
     border: 1px solid #555;
-    cursor: pointer;
-    transition: all 0.3s;
+    border-radius: 6px;
+    padding: 15px;
+    transition: border-color 0.3s;
 }
 
-.script-item:hover {
-    background-color: #444;
+.script-card:hover {
     border-color: #00d4aa;
 }
 
-.script-item.active {
-    border-color: #00d4aa;
-    background-color: #444;
-}
-
-.script-item h4 {
+.script-card h4 {
     color: #00d4aa;
     margin-bottom: 5px;
 }
 
-.script-item .script-type {
+.script-type {
     color: #888;
     font-size: 12px;
     text-transform: uppercase;
+    margin-bottom: 10px;
 }
 
-.script-item .script-actions {
-    margin-top: 10px;
+.script-actions-card {
     display: flex;
-    gap: 5px;
+    gap: 8px;
 }
 
-.script-item .script-actions button {
+.script-actions-card button {
     background-color: #555;
-    color: #fff;
+    color: #ffffff;
     border: none;
-    padding: 4px 8px;
-    border-radius: 3px;
+    padding: 6px 12px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 12px;
+    transition: background-color 0.3s;
 }
 
-.script-item .script-actions button:hover {
-    background-color: #666;
+.script-actions-card button:hover {
+    background-color: #777;
 }
 
-.script-item .script-actions button.delete {
-    background-color: #e74c3c;
+.script-actions-card button.delete-btn {
+    background-color: #ff6b6b;
 }
 
-.script-item .script-actions button.delete:hover {
-    background-color: #c0392b;
+.script-actions-card button.delete-btn:hover {
+    background-color: #ff5252;
 }
 
-#script-output {
-    background-color: #1e1e1e;
-    border-radius: 5px;
-    padding: 15px;
-    border: 1px solid #555;
+.output-section {
+    margin-top: 20px;
 }
 
-#script-output h3 {
+.output-section h3 {
     color: #00d4aa;
     margin-bottom: 10px;
 }
 
-#output-content {
-    background-color: #000;
+#output {
+    background-color: #000000;
     color: #00ff00;
     padding: 15px;
     border-radius: 3px;
@@ -292,6 +298,257 @@ h1 {
     max-height: 300px;
     overflow-y: auto;
     white-space: pre-wrap;
+    border: 1px solid #555;
+}
+
+/* File Mount Tab Styles */
+.panel-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 20px;
+    min-height: 600px;
+}
+
+.panel {
+    background-color: #2d2d2d;
+    border: 1px solid #555;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.panel h2 {
+    color: #00d4aa;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* File Upload Section */
+.file-upload-section {
+    margin-bottom: 20px;
+}
+
+.drop-zone {
+    border: 2px dashed #555;
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    transition: border-color 0.3s, background-color 0.3s;
+    background-color: #333;
+    cursor: pointer;
+}
+
+.drop-zone:hover,
+.drop-zone.dragover {
+    border-color: #00d4aa;
+    background-color: #3a3a3a;
+}
+
+.drop-zone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.upload-icon {
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.drop-text {
+    color: #ccc;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    color: #00d4aa;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: inherit;
+    padding: 0;
+}
+
+.link-button:hover {
+    color: #00b894;
+}
+
+.file-list {
+    margin-top: 20px;
+}
+
+.file-item {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    padding: 10px;
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.file-info {
+    flex: 1;
+}
+
+.file-name {
+    font-weight: 500;
+    color: #ffffff;
+    margin-bottom: 2px;
+}
+
+.file-size {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.file-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Pod Selection */
+.pod-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.pod-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #333;
+}
+
+.pod-item {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #555;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.pod-item:hover {
+    background-color: #3a3a3a;
+}
+
+.pod-item.selected {
+    background-color: #00d4aa;
+    color: #1e1e1e;
+}
+
+.pod-item:last-child {
+    border-bottom: none;
+}
+
+.pod-info h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    color: inherit;
+}
+
+.pod-info p {
+    margin: 2px 0 0 0;
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+    font-style: italic;
+}
+
+/* Terminal Section */
+.terminal-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 100%;
+}
+
+.terminal-container {
+    flex: 1;
+    background-color: #000000;
+    border: 1px solid #555;
+    border-radius: 4px;
+    min-height: 300px;
+    position: relative;
+    overflow: hidden;
+}
+
+.terminal-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #888;
+    font-style: italic;
+}
+
+.terminal-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+}
+
+/* Button Styles */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background-color: #00d4aa;
+    color: #1e1e1e;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: #00b894;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: #555;
+    color: #ffffff;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background-color: #777;
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background-color: #ff6b6b;
+    color: #ffffff;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background-color: #ff5252;
+    transform: translateY(-1px);
 }
 
 /* Responsive Design */
@@ -300,9 +557,19 @@ h1 {
         padding: 10px;
     }
     
-    .pod-selector {
+    .tabs {
         flex-direction: column;
-        align-items: stretch;
+    }
+    
+    .tab-button {
+        margin-right: 0;
+        margin-bottom: 5px;
+        border-radius: 5px;
+    }
+    
+    .panel-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
     }
     
     .script-header {
@@ -310,13 +577,57 @@ h1 {
         align-items: stretch;
     }
     
-    .script-header input,
-    .script-header select,
-    .script-header button {
-        width: 100%;
+    .script-actions,
+    .terminal-controls {
+        flex-direction: column;
     }
     
-    #scripts-list {
-        grid-template-columns: 1fr;
+    .pod-selector {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #2d2d2d;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+/* Focus styles for accessibility */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid #00d4aa;
+    outline-offset: 2px;
+}
+
+/* Animation for tab transitions */
+.tab-content {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
